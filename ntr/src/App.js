@@ -3,7 +3,7 @@ import './App.css';
 import {Link, Routes, BrowserRouter, Route} from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { db, auth } from './config/firebase';
-import { addDoc, getDocs, query, where, collection, deleteDoc, doc} from 'firebase/firestore';
+import { addDoc, getDocs, query, where, collection, deleteDoc, doc, updateDoc} from 'firebase/firestore';
 import {signInWithEmailAndPassword, createUserWithEmailAndPassword} from 'firebase/auth';
 import Cookies from 'js-cookie';
 
@@ -151,6 +151,8 @@ function Startseite() {
 function ToDoListe() {
   const[toDo, setToDo] = useState('');
   const[toDos, setToDos] = useState([]);
+  const[edit,setEdit] = useState(false);
+  const[editToDo, setEditToDo] = useState('');
   let username = Cookies.get('username') || null;
 
  const AddToDo = async() => {
@@ -180,7 +182,11 @@ function ToDoListe() {
     console.log(e);
   }
  }
+
  
+
+ 
+
   useEffect(() => {
     fetchToDos();
 });
@@ -195,8 +201,17 @@ function ToDoListe() {
       </button>
       <ul>
       {toDos.map((task, index) => (
-  <li key={index}>
-    {task.aufgabe}
+       <li key={index}>
+       {edit ? (
+        <>
+         <input type='text' placeholder={task.aufgabe} onChange={(e) => setEditToDo(e.target.value) }/>
+        </>
+       ): (
+       <>
+        {task.aufgabe}
+       </>
+      )}
+   
     <button
       onClick={async () => {
         try {
@@ -220,6 +235,37 @@ function ToDoListe() {
     >
       Löschen
     </button>
+    <span>
+      {edit ? (
+        <button onClick={async() => {
+          try {
+            if (editToDo.trim() !== '') {
+             setEdit(!edit);
+             const updateToDos = { 
+              aufgabe: editToDo || null
+             };
+             const q = query(collection(db, 'toDoListe'),  where('email', '==', username),
+             where('aufgabe', '==', task.aufgabe));
+             const querySnapshot = await getDocs(q);
+    
+             querySnapshot.forEach(async(docSnapshot) => {
+               await updateDoc(docSnapshot.ref, updateToDos);
+             });
+             fetchToDos();
+             alert('Erfolgreich gesichert!');
+           }
+          }catch(e){
+            alert(e);
+          }}
+        }>
+          Sichern
+        </button>
+      ):(
+        <button onClick={() => setEdit(!edit) }>
+          Bearbeiten
+        </button>
+      )}
+    </span>
   </li>
 ))}
 
