@@ -6,34 +6,43 @@ import { db, auth } from './config/firebase';
 import { addDoc, getDocs, query, where, collection, deleteDoc, doc, updateDoc} from 'firebase/firestore';
 import {signInWithEmailAndPassword, createUserWithEmailAndPassword} from 'firebase/auth';
 import Cookies from 'js-cookie';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome, faListCheck } from "@fortawesome/free-solid-svg-icons";
 
 /*Main */
 export default function App() {
   return (
-   <BrowserRouter>
-     <main>
-      <div className='header'>
-       Familie Ntrikos
-      </div>
-      {Cookies.get('loggedIN') === 'true' && (
-        <Link to='/ToDoListe'>
-         <button>
-          To Do Liste
-         </button>
-        </Link>
-      )}
-      
-      <Link to='/'>
-       <button>
-         Startseite
-       </button>
-      </Link>
-     </main>
-     <Routes>
-      <Route path='/' element={<Startseite/>}/>
-      <Route path='/ToDoListe' element={<ToDoListe/>}/>
-     </Routes>
-    </BrowserRouter> 
+    <BrowserRouter>
+      <main>
+        <div className="header"> 
+          <span className='headline'>
+           Familie Ntrikos
+           </span>
+        <div className="menu">
+          <Link to="/" className="menuElement">
+            <span className="menuText">Startseite</span>
+            <FontAwesomeIcon icon={faHome} className="menuIcon" />
+          </Link>
+
+          {Cookies.get("loggedIN") === "true" && (
+            <Link to="/ToDoListe" className="menuElement">
+              <span className="menuText">To Do Liste</span>
+              <FontAwesomeIcon icon={faListCheck} className="menuIcon" />
+            </Link>
+          )}
+          {/* <div className='menuElement'>
+              <span className="menuText">Test</span>
+              <FontAwesomeIcon icon={faListCheck} className="menuIcon" />
+          </div> */}
+        </div>
+        </div>
+      </main>
+
+      <Routes>
+        <Route path="/" element={<Startseite />} />
+        <Route path="/ToDoListe" element={<ToDoListe />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
@@ -101,7 +110,6 @@ function Startseite() {
  
   return (
     <div>
-      Startseite
     {Cookies.get('loggedIN') === 'true' ? (
       <>
       <br/>
